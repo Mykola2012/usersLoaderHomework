@@ -9,16 +9,17 @@ class UsersLoader extends Component {
       users: [],
       isFetching: false,
       error: null,
-      currentPage: Number(window.localStorage.getItem('page')) || 1
+      currentPage: Number(window.localStorage.getItem('page')) || 1,
+      currtentUsers: Number('5')
     }
   }
 
   load = () => {
-    const { currentPage } = this.state
+    const { currentPage, currtentUsers } = this.state
 
     this.setState({ isFetching: true })
 
-    loadUsers({ page: currentPage })
+    loadUsers({ page: currentPage, results: currtentUsers })
       .then(({ results }) => this.setState({ users: results }))
       .catch(e => {
         this.setState({ error: e })
@@ -53,22 +54,54 @@ class UsersLoader extends Component {
     }
   }
 
+  handleResultsChange = ({ target: { value } }) => {
+    this.setState({
+      currtentUsers: value
+    })
+  }
+
+  handleSubmit = e => {
+    const { currtentUsers } = this.state
+
+    e.preventDefault()
+    this.setState({ currtentUsers: currtentUsers })
+  }
+
   render () {
-    const { users, error, isFetching, currentPage } = this.state
+    const { users, error, isFetching, currentPage, currentUsers } = this.state
 
     return (
-      <>
-        <p>{currentPage}</p>
-        <button onClick={this.decrement}>previous page</button>
-        <button onClick={this.increment}>next page</button>
+      <main>
         {error && <div style={{ color: 'red' }}>!!!ERROR!!!</div>}
         {isFetching && <div>Loading, please wait...</div>}
         <ul>
           {users.map(u => (
-            <li key={u.login.uuid}>{JSON.stringify(u)}</li>
+            <li key={u.login.uuid}>
+              <img
+                src={u.picture.large}
+                alt={`${u.name.first} ${u.name.last}`}
+              />
+              <div>{u.email}</div>
+            </li>
           ))}
         </ul>
-      </>
+        <form>
+          <label>
+            <span>Number of users:</span>
+            <input
+              type='number'
+              value={currentUsers}
+              name='currentUsers'
+              onChange={this.handleResultsChange}
+            ></input>
+          </label>
+          <button onClick={this.handleSubmit}></button>
+        </form>
+
+        <p>{currentPage}</p>
+        <button onClick={this.decrement}>previous page</button>
+        <button onClick={this.increment}>next page</button>
+      </main>
     )
   }
 }

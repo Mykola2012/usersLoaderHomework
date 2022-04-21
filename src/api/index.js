@@ -4,7 +4,7 @@ import CONFIGS from './../configs'
 function loadUsers (options) {
   const defaultOptions = {
     page: 1,
-    results: 10,
+    results: 5,
     seed: CONFIGS.RESULTS_ORDER,
     inc: CONFIGS.INCLUDUNG_RESULTS
   }
