@@ -34,10 +34,14 @@ class UsersLoader extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    const { currentPage } = this.state
+    const { currentPage, currtentUsers } = this.state
 
     if (prevState.currentPage !== currentPage) {
       window.localStorage.setItem('page', currentPage)
+      this.load()
+    }
+
+    if (prevState.currtentUsers !== currtentUsers) {
       this.load()
     }
   }
@@ -58,13 +62,6 @@ class UsersLoader extends Component {
     this.setState({
       currtentUsers: value
     })
-  }
-
-  handleSubmit = e => {
-    const { currtentUsers } = this.state
-
-    e.preventDefault()
-    this.setState({ currtentUsers: currtentUsers })
   }
 
   render () {
@@ -95,7 +92,6 @@ class UsersLoader extends Component {
               onChange={this.handleResultsChange}
             ></input>
           </label>
-          <button onClick={this.handleSubmit}></button>
         </form>
 
         <p>{currentPage}</p>
