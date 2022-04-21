@@ -1,5 +1,7 @@
+import classNames from 'classnames'
 import React, { Component } from 'react'
 import loadUsers from '../../api'
+import styles from './UsersLoader.module.scss'
 
 class UsersLoader extends Component {
   constructor (props) {
@@ -15,12 +17,13 @@ class UsersLoader extends Component {
   }
 
   load = () => {
-    const { currentPage, currtentUsers } = this.state
+    const { currentPage, currtentUsers, gender } = this.state
 
     this.setState({ isFetching: true })
 
     loadUsers({ page: currentPage, results: currtentUsers })
       .then(({ results }) => this.setState({ users: results }))
+
       .catch(e => {
         this.setState({ error: e })
       })
@@ -34,7 +37,7 @@ class UsersLoader extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    const { currentPage, currtentUsers } = this.state
+    const { currentPage, currtentUsers, gender } = this.state
 
     if (prevState.currentPage !== currentPage) {
       window.localStorage.setItem('page', currentPage)
@@ -67,36 +70,51 @@ class UsersLoader extends Component {
   render () {
     const { users, error, isFetching, currentPage, currentUsers } = this.state
 
+    const styleGender = classNames(styles.liUser, {
+      [styles.genderMale]: users.gender === 'male',
+      [styles.genderFemale]: users.gender === 'female'
+    })
+
     return (
-      <main>
+      <main className={styles.mainComtainer}>
+        <p className={styles.currentPage}>{currentPage}</p>
+
+        <div className={styles.btnWrapper}>
+          <button className={styles.btnCurrentPage} onClick={this.decrement}>
+            previous page
+          </button>
+          <button className={styles.btnCurrentPage} onClick={this.increment}>
+            next page
+          </button>
+        </div>
+
+        <label className={styles.labelCurrentUsers}>
+          <span>Number of users:</span>
+          <input
+            className={styles.inputCurrentUsers}
+            type='number'
+            value={currentUsers}
+            name='currentUsers'
+            onChange={this.handleResultsChange}
+            autoFocus
+          ></input>
+        </label>
+
         {error && <div style={{ color: 'red' }}>!!!ERROR!!!</div>}
         {isFetching && <div>Loading, please wait...</div>}
-        <ul>
+
+        <ul className={styles.ulUserWrapper}>
           {users.map(u => (
-            <li key={u.login.uuid}>
+            <li className={styleGender} key={u.login.uuid}>
               <img
+                className={styles.imgUser}
                 src={u.picture.large}
                 alt={`${u.name.first} ${u.name.last}`}
               />
-              <div>{u.email}</div>
+              <span className={styles.emailUser}>{u.email}</span>
             </li>
           ))}
         </ul>
-        <form>
-          <label>
-            <span>Number of users:</span>
-            <input
-              type='number'
-              value={currentUsers}
-              name='currentUsers'
-              onChange={this.handleResultsChange}
-            ></input>
-          </label>
-        </form>
-
-        <p>{currentPage}</p>
-        <button onClick={this.decrement}>previous page</button>
-        <button onClick={this.increment}>next page</button>
       </main>
     )
   }
