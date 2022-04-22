@@ -17,7 +17,7 @@ class UsersLoader extends Component {
   }
 
   load = () => {
-    const { currentPage, currtentUsers, gender } = this.state
+    const { currentPage, currtentUsers } = this.state
 
     this.setState({ isFetching: true })
 
@@ -37,7 +37,7 @@ class UsersLoader extends Component {
   }
 
   componentDidUpdate (prevProps, prevState) {
-    const { currentPage, currtentUsers, gender } = this.state
+    const { currentPage, currtentUsers } = this.state
 
     if (prevState.currentPage !== currentPage) {
       window.localStorage.setItem('page', currentPage)
@@ -70,11 +70,6 @@ class UsersLoader extends Component {
   render () {
     const { users, error, isFetching, currentPage, currentUsers } = this.state
 
-    const styleGender = classNames(styles.liUser, {
-      [styles.genderMale]: users.gender === 'male',
-      [styles.genderFemale]: users.gender === 'female'
-    })
-
     return (
       <main className={styles.mainComtainer}>
         <p className={styles.currentPage}>{currentPage}</p>
@@ -105,7 +100,13 @@ class UsersLoader extends Component {
 
         <ul className={styles.ulUserWrapper}>
           {users.map(u => (
-            <li className={styleGender} key={u.login.uuid}>
+            <li
+              className={classNames(styles.liUser, {
+                [styles.genderMale]: u.gender === 'male',
+                [styles.genderFemale]: u.gender === 'female'
+              })}
+              key={u.login.uuid}
+            >
               <img
                 className={styles.imgUser}
                 src={u.picture.large}
