@@ -1,6 +1,7 @@
-import classNames from 'classnames'
 import React, { Component } from 'react'
 import loadUsers from '../../api'
+import ControlPanel from '../ControlPanel'
+import UserListItem from '../UserListItem'
 import styles from './UsersLoader.module.scss'
 
 class UsersLoader extends Component {
@@ -75,46 +76,20 @@ class UsersLoader extends Component {
         <p className={styles.currentPage}>{currentPage}</p>
 
         <div className={styles.btnWrapper}>
-          <button className={styles.btnCurrentPage} onClick={this.decrement}>
-            previous page
-          </button>
-          <button className={styles.btnCurrentPage} onClick={this.increment}>
-            next page
-          </button>
+          <ControlPanel
+            currentPage={currentPage}
+            increment={this.increment}
+            decrement={this.decrement}
+            currentUsers={currentUsers}
+            handleResultsChange={this.handleResultsChange}
+          />
         </div>
-
-        <label className={styles.labelCurrentUsers}>
-          <span>Number of users:</span>
-          <input
-            className={styles.inputCurrentUsers}
-            type='number'
-            value={currentUsers}
-            name='currentUsers'
-            onChange={this.handleResultsChange}
-            autoFocus
-          ></input>
-        </label>
 
         {error && <div style={{ color: 'red' }}>!!!ERROR!!!</div>}
         {isFetching && <div>Loading, please wait...</div>}
 
         <ul className={styles.ulUserWrapper}>
-          {users.map(u => (
-            <li
-              className={classNames(styles.liUser, {
-                [styles.genderMale]: u.gender === 'male',
-                [styles.genderFemale]: u.gender === 'female'
-              })}
-              key={u.login.uuid}
-            >
-              <img
-                className={styles.imgUser}
-                src={u.picture.large}
-                alt={`${u.name.first} ${u.name.last}`}
-              />
-              <span className={styles.emailUser}>{u.email}</span>
-            </li>
-          ))}
+          <UserListItem users={users} />
         </ul>
       </main>
     )
